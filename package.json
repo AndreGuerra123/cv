@@ -1,0 +1,27 @@
+{
+  "name": "cv",
+  "version": "1.0.0",
+  "description": "My curriculum vitae",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndreGuerra123/cv.git"
+  },
+  "keywords": [
+    "Curriculum",
+    "Vitae"
+  ],
+  "author": "Andre Guerra",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AndreGuerra123/cv/issues"
+  },
+  "homepage": "https://github.com/AndreGuerra123/cv#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
