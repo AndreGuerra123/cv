@@ -61,5 +61,3 @@ catch (Exception $e)
 {
     $responseArray = array('type' => 'danger', 'message' => $errorMessage.);
 }
-
-?>
