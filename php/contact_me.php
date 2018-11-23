@@ -1,47 +1,36 @@
 <?php
-/*
- *  CONFIGURE EVERYTHING HERE
- */
 
-// an email address that will be in the From field of the email.
-$from = 'Curriculum Vitae Form';
+// Import PHPMailer classes into the global namespace
+// These must be at the top of your script, not inside a function
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-// an email address that will receive the email with the output of the form
-$sendTo = getenv("EMAIL")
+//Load Composer's autoloader
+require 'vendor/autoload.php';
 
-// subject of the email
-$subject = 'New message from contact form';
-
-// form field names and their translations.
-// array variable name => Text to appear in the email
-$fields = array('name' => 'Name', 'surname' => 'Surname', 'phone' => 'Phone', 'email' => 'Email', 'message' => 'Message'); 
-
-// message that will be displayed when everything is OK :)
+$subject = 'New Curriculum Vitae Message;'
+$fields = array('firstname' => 'First Name', 'lastname' => 'Last Name', 'email' => 'Email', 'subject' => 'Subject', 'message' => 'Message');
 $okMessage = 'Contact form successfully submitted. Thank you, I will get back to you soon!';
-
-// If something goes wrong, we will display this message.
 $errorMessage = 'There was an error while submitting the form. Please try again later';
 
-/*
- *  LET'S DO THE SENDING
- */
-
-// if you are not debugging and don't need error reporting, turn this off by error_reporting(0);
-error_reporting(E_ALL & ~E_NOTICE);
+error_reporting(0);
 
 try
 {
 
-    if(count($_POST) == 0) throw new \Exception('Form is empty');
+    if(count($_POST) == 0) throw new \Exception('Form is empty.');
             
-    $emailText = "You have a new message from your contact form\n=============================\n";
+    $emailTextHtml = "<h1>You have a new message from your contact form</h1><hr>";
+    $emailTextHtml .= "<table>";
 
     foreach ($_POST as $key => $value) {
-        // If the field exists in the $fields array, include it in the email 
-        if (isset($fields[$key])) {
-            $emailText .= "$fields[$key]: $value\n";
-        }
+    // If the field exists in the $fields array, include it in the email
+       if (isset($fields[$key])) {
+           $emailTextHtml .= "<tr><th>$fields[$key]</th><td>$value</td></tr>";
+       }
     }
+
+    $emailTextHtml .= "</table><hr>";
 
     // All the neccessary headers for the email.
     $headers = array('Content-Type: text/plain; charset="UTF-8";',
@@ -50,26 +39,27 @@ try
         'Return-Path: ' . $from,
     );
     
-    // Send email
-    mail($sendTo, $subject, $emailText, implode("\n", $headers));
-
+    $mail = new PHPMailer(true);
+    $mail->isSMTP();
+    $mail->SMTPDebug = 0;
+    $mail->SMTPSecure = 'tls';
+    $mail->SMTPAuth = true;
+    $mail->Host = gethostbyname(gentenv('SMTP_HOST'));
+    $mail->Port = getenv('SMTP_PORT')
+    $mail->Username = getenv('SMTP_USERNAME')
+    $mail->Password = getenv('SMTP_PASSWORD');
+    $mail->setFrom(getenv('SMTP_EMAIL'),"Curriculum Vitae Mailer");
+    $mail->addAddress(getenv('EMAIL'));
+    $mail->isHTML(true);
+    $mail->Subject = $subject;
+    $mail->msgHTML($emailTextHtml); 
+    $mail->Debugoutput = 'html';
+    $mail->send();
     $responseArray = array('type' => 'success', 'message' => $okMessage);
 }
-catch (\Exception $e)
+catch (Exception $e)
 {
-    $responseArray = array('type' => 'danger', 'message' => $errorMessage);
+    $responseArray = array('type' => 'danger', 'message' => $errorMessage.);
 }
 
-
-// if requested by AJAX request return JSON response
-if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-    $encoded = json_encode($responseArray);
-
-    header('Content-Type: application/json');
-
-    echo $encoded;
-}
-// else just display the message
-else {
-    echo $responseArray['message'];
-}
+?>
