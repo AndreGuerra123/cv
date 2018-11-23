@@ -1,4 +1,1 @@
-<?php 
-include("index.html");
-include("php/contact_me.php")
-?> 
+<?php header( 'Location: /index.html' ) ;  ?>
